@@ -9,6 +9,8 @@ public class Gui implements ActionListener {
     JButton Csv = new JButton("Csv");
     JButton Json = new JButton("Json");
 
+    JTable Sheet = new JTable();
+
     Gui () {
         //Starting the gui
         frame.setSize(500,500);
