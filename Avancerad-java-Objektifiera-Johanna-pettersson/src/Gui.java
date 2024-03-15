@@ -1,15 +1,15 @@
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 public class Gui implements ActionListener {
     JFrame frame = new JFrame();
     JPanel ButtonPanel = new JPanel();
     JButton Csv = new JButton("Csv");
     JButton Json = new JButton("Json");
-
-    JTable Sheet = new JTable();
 
     Gui () {
         //Starting the gui
@@ -34,7 +34,11 @@ public class Gui implements ActionListener {
 
         //Make buttons execute the Csv/Json Classes
         if (btn.matches("Csv")) {
-            new ReadCsv ();
+            try {
+                new ReadCsv ();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
         }
         if (btn.matches("Json")) {
             new ReadJson ();
