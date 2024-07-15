@@ -1,74 +1,58 @@
 import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
 
-import com.opencsv.CSVReader;
-import com.opencsv.exceptions.CsvException;
 
-import java.util.List;
+
 import javax.swing.table.DefaultTableModel;
-import javax.swing.JTable;
-import java.io.FileReader;
-import java.util.Scanner;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.util.Vector;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.csv.CSVParser;
 
-public class ReadCsv extends Gui {
 
-    JFrame frame;
+public class ReadCsv  {
+    JFrame Csv;
+    JPanel panel;
     JTable table;
-    String [][] data = {};
+    JScrollPane scrollPane;
 
+    ReadCsv () {
 
-    ReadCsv () throws IOException {
+        Csv = new JFrame("Csv");
+
 
         System.out.println("Csv");
         JFileChooser fileChooser = new JFileChooser("src");
         fileChooser.addChoosableFileFilter(new FileNameExtensionFilter ("csv file (.csv)","csv"));
-        int option = fileChooser.showOpenDialog(null);
+        int i = fileChooser.showOpenDialog(null);
 
-        switch (option) {
-            case JFileChooser.APPROVE_OPTION -> System.out.println("Open");
-            case JFileChooser.CANCEL_OPTION -> System.out.println("Cancel");
-            case JFileChooser.ERROR_OPTION -> System.out.println("Error");
-        }
+        if (i==JFileChooser.APPROVE_OPTION) {
+            System.out.println("Open");
 
-        String file = fileChooser.getSelectedFile().toString();
-        BufferedReader reader = null;
-        String line =  "";
-        String [] row;
-        
-        try {
-            reader = new BufferedReader(new FileReader(file));
-            
-            while ((line=reader.readLine())!=null) {
-                row = line.split(",");
-                for (String index : row) {
-                    System.out.printf("%-10s", index);
-                }
-                System.out.println();
+            File file = fileChooser.getSelectedFile();
+            String filepath = file.getPath();
+            //String fi = file.getName();
+            System.out.println(filepath);
+            DefaultTableModel csv_data = new DefaultTableModel();
+
+            try{
+                int start = 0;
+                InputStreamReader reader = new InputStreamReader(new FileInputStream(filepath));
+                org.apache.commons.csv.CSVParser csvParser = CSVFormat.DEFAULT.parse(reader);
             }
-
-            String [] columnNames = {"OrderDate", "Region", "Rep1", "Rep2", "Item", "Units", "UnitCost", "Total"};
-
-            frame = new JFrame("Csv");
-
-            table = new JTable(data,columnNames);
-            table.setBounds(30,40,200,300);
-
-            JScrollPane sp = new JScrollPane();
-            frame.add(sp);
-            frame.setSize(500,200);
-            frame.setVisible(true);
-
-        }catch (Exception e) {
-            e.printStackTrace();
         }
-        try {
-            reader.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+
+
+
+
+
+            //case JFileChooser.CANCEL_OPTION -> System.out.println("Cancel");
+            //case JFileChooser.ERROR_OPTION -> System.out.println("Error");
+
+
+
     }
 }
