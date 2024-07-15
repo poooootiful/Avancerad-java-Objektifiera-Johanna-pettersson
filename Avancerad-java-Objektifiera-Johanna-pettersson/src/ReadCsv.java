@@ -1,74 +1,75 @@
 import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-
-import com.opencsv.CSVReader;
-import com.opencsv.exceptions.CsvException;
-
-import java.util.List;
-import javax.swing.table.DefaultTableModel;
+import java.util.Vector;
 import javax.swing.JTable;
-import java.io.FileReader;
-import java.util.Scanner;
-
-public class ReadCsv extends Gui {
-
-    JFrame frame;
-    JTable table;
-    String [][] data = {};
+import javax.swing.table.DefaultTableModel;
 
 
-    ReadCsv () throws IOException {
+public class ReadCsv {
+
+
+    ReadCsv() {
 
         System.out.println("Csv");
         JFileChooser fileChooser = new JFileChooser("src");
-        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter ("csv file (.csv)","csv"));
+        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("CSV file (.csv)", "csv"));
         int option = fileChooser.showOpenDialog(null);
 
         switch (option) {
-            case JFileChooser.APPROVE_OPTION -> System.out.println("Open");
-            case JFileChooser.CANCEL_OPTION -> System.out.println("Cancel");
-            case JFileChooser.ERROR_OPTION -> System.out.println("Error");
-        }
-
-        String file = fileChooser.getSelectedFile().toString();
-        BufferedReader reader = null;
-        String line =  "";
-        String [] row;
-        
-        try {
-            reader = new BufferedReader(new FileReader(file));
-            
-            while ((line=reader.readLine())!=null) {
-                row = line.split(",");
-                for (String index : row) {
-                    System.out.printf("%-10s", index);
+            case JFileChooser.APPROVE_OPTION:
+                System.out.println("Open");
+                //Get the file and send it into the reader
+                File file = fileChooser.getSelectedFile();
+                Vector<Vector<String>> data = CsvReader(file);
+                if (data != null) {
+                    display(data);
                 }
-                System.out.println();
+                break;
+            case JFileChooser.CANCEL_OPTION:
+                System.out.println("Cancel");
+                break;
+            case JFileChooser.ERROR_OPTION:
+                System.out.println("Error");
+                break;
+        }
+    }
+
+    private Vector<Vector<String>> CsvReader(File file) {
+        //The Data
+        Vector<Vector<String>> data = new Vector<>();
+
+        //Reader and seperating the file
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                System.out.println(line);
+                String [] splits = line.split(",");
+                Vector<String> row = new Vector<>();
+                for (String split : splits) {
+                    row.add(split);
+                }
+                data.add(row);
             }
-
-            String [] columnNames = {"OrderDate", "Region", "Rep1", "Rep2", "Item", "Units", "UnitCost", "Total"};
-
-            frame = new JFrame("Csv");
-
-            table = new JTable(data,columnNames);
-            table.setBounds(30,40,200,300);
-
-            JScrollPane sp = new JScrollPane();
-            frame.add(sp);
-            frame.setSize(500,200);
-            frame.setVisible(true);
-
-        }catch (Exception e) {
-            e.printStackTrace();
-        }
-        try {
-            reader.close();
         } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+            System.err.println("There was a error with message: " + e.getMessage());
+        }return data;
+    }
+    private void display (Vector<Vector<String>> data) {
+        //Make the collums
+        Vector<String> collums = data.get(0);
+        data.remove(0);
+
+        //Make, populate and display the Jtable
+        DefaultTableModel tb = new DefaultTableModel(data,collums);
+        JTable table = new JTable(tb);
+        table.setAutoCreateRowSorter(true);
+        JScrollPane sc = new JScrollPane(table);
+        JFrame csv = new JFrame("Csv Table");
+        csv.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        csv.add(sc);
+        csv.pack();
+        csv.setSize(200,200);
+        csv.setVisible(true);
     }
 }

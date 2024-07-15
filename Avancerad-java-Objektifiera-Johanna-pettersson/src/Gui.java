@@ -34,14 +34,10 @@ public class Gui implements ActionListener {
 
         //Make buttons execute the Csv/Json Classes
         if (btn.matches("Csv")) {
-            try {
-                new ReadCsv ();
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
+            new ReadCsv();
         }
         if (btn.matches("Json")) {
-            new ReadJson ();
+            new ReadJson();
         }
     }
 }
